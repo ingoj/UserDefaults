@@ -76,6 +76,15 @@ class Form extends ilPropertyFormGUI
         $this->pl = ilUserDefaultsPlugin::getInstance();
         $this->ctrl = $DIC->ctrl();
 
+        $this->tabs = $DIC["ilTabs"];
+        $this->tabs->replaceTab(
+            "settings",
+            "check_back",
+            $this->pl->txt("check_back""),
+            $this->ctrl->getLinkTarget($parent_gui,UserSettingsGUI::CMD_INDEX)
+            );
+        $this->tabs->activateTab("check_back");
+
         $this->userDefaultsApi = UserDefaultsApi::new();
 
         $this->setFormAction($this->ctrl->getFormAction($this->parent_gui));
