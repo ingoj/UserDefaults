@@ -80,7 +80,7 @@ class UDFCheckFormGUI extends ilPropertyFormGUI
         } else {
             $formTitle = 'form_modify_title';
         }
-        $this->setTitle($this->pl->txt($form_title). ' ' .$ilUserSetting->getTitle());
+        $this->setTitle($this->pl->txt($formTitle). ' ' .$ilUserSetting->getTitle());
 
         $categories_radio = new ilRadioGroupInputGUI(
             $this->txt(self::F_UDF_FIELD_CATEGORY),
