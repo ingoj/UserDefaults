@@ -12,7 +12,7 @@ use ilTextInputGUI;
 use ilUDFDefinitionPlugin;
 use ilUserDefaultsPlugin;
 use ilUserSearchOptions;
-use srag\plugins\UserDefauts\UserSetting\UserSetting;
+use srag\plugins\UserDefaults\UserSetting\UserSetting;
 use srag\Plugins\UserDefaults\Utils\UserDefaultsTrait;
 use UDFCheckGUI;
 use srag\Plugins\UserDefaults\UDFCheck\UDFCheckTableGUI;
