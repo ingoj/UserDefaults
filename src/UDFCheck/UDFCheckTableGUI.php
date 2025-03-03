@@ -12,6 +12,7 @@ use ilLinkButton;
 use ilTable2GUI;
 use ilUserDefaultsPlugin;
 use ilUtil;
+use srag\Plugins\UserDefaults\UserSetting\UserSetting;
 use srag\Plugins\UserDefaults\Utils\UserDefaultsTrait;
 use UDFCheckGUI;
 use UserSettingsGUI;
@@ -47,7 +48,19 @@ class UDFCheckTableGUI extends ilTable2GUI
         $this->setPrefix(self::USR_DEF_CONTENT);
         $this->setFormName(self::USR_DEF_CONTENT);
         $this->setId(self::USR_DEF_CONTENT);
-        $this->setTitle($this->pl->txt('check_table_title'));
+
+        $ilUserSetting = UserSetting::Find($_GET[UserSettingGUI::IDENTIFIER]);
+        $this->setTitle($this->pl->txt('check_table_title'). ' ' . $ilUserSetting->getTitle());
+
+        $this->tabs = $DIC["ilTabs"];
+        $this->tabs->replaceTab(
+            "settings",
+            "check_back",
+            $this->pl->txt("check_back"),
+            $this->ctrl->getLinkTargetByClass(UserSettingsGUI::class, UserSettingsGUI::CMD_INDEX)
+            );
+        $this->tabs->activateTab("check_back");
+        
         parent::__construct($parent_obj, $parent_cmd, $template_context);
         $this->ctrl->saveParameter($parent_obj, $this->getNavParameter());
         $this->setEnableNumInfo(true);
@@ -58,12 +71,12 @@ class UDFCheckTableGUI extends ilTable2GUI
         $this->setExternalSegmentation(true);
         $this->setRowTemplate('tpl.settings_row.html', $this->pl->getDirectory());
         $this->parseData();
-
+/*
         $button = ilLinkButton::getInstance();
         $button->setCaption($this->pl->txt("check_back"), false);
         $button->setUrl($this->ctrl->getLinkTargetByClass(UserSettingsGUI::class, UserSettingsGUI::CMD_INDEX));
         $DIC->toolbar()->addButtonInstance($button);
-
+*/
         $button = ilLinkButton::getInstance();
         $button->setCaption($this->pl->txt("check_add"), false);
         $button->setUrl($this->ctrl->getLinkTarget($parent_obj, UDFCheckGUI::CMD_ADD));
