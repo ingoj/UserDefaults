@@ -80,7 +80,7 @@ class Form extends ilPropertyFormGUI
         $this->tabs->replaceTab(
             "settings",
             "check_back",
-            $this->pl->txt("check_back""),
+            $this->pl->txt("check_back"),
             $this->ctrl->getLinkTarget($parent_gui,UserSettingsGUI::CMD_INDEX)
             );
         $this->tabs->activateTab("check_back");
