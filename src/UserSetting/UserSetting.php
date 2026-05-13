@@ -24,6 +24,7 @@ use ilPersonalSkill;
 use ilPortfolioAccessHandler;
 use ilPortfolioTemplatePage;
 use ilUserDefaultsPlugin;
+use ilUtil;
 use php4DOMDocument;
 use srag\Plugins\UserDefaults\UDFCheck\UDFCheck;
 use srag\Plugins\UserDefaults\Utils\UserDefaultsTrait;
@@ -167,6 +168,15 @@ class UserSetting extends ActiveRecord
 
     public function doAssignements(ilObjUser $user): void
     {
+        // ILIAS_HTTP_PATH is normally set by the HTTP bootstrap, and in CLI cron by
+        // ilCronManagerImpl::run(). The plugin can however be reached earlier in the
+        // cron flow (via ilCronStartUp::authenticate() -> $user->update()), before
+        // that define has happened, while still pulling in GUI services that require
+        // it. Mirror the core fallback here so any branch of doAssignements is safe.
+        if (!defined('ILIAS_HTTP_PATH')) {
+            define('ILIAS_HTTP_PATH', ilUtil::_getHttpPath());
+        }
+
         $this->setUsrObject($user);
         if ($this->isValid()) {
             $this->generatePortfolio();
