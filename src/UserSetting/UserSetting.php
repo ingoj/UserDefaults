@@ -3,6 +3,7 @@
 namespace srag\Plugins\UserDefaults\UserSetting;
 
 use ILIAS\DI\RBACServices;
+use ILIAS\Skill\Service\SkillPersonalService;
 use ActiveRecord;
 use DOMXPath;
 use ilCourseConstants;
@@ -20,7 +21,6 @@ use ilObjPortfolioTemplate;
 use ilObjStudyProgramme;
 use ilObjUser;
 use ilParticipants;
-use ilPersonalSkill;
 use ilPortfolioAccessHandler;
 use ilPortfolioTemplatePage;
 use ilUserDefaultsPlugin;
@@ -52,6 +52,7 @@ class UserSetting extends ActiveRecord
     private ilUserDefaultsPlugin $pl;
     private RBACServices $rbac;
     private ilObjUser $user;
+    private ?SkillPersonalService $personal_skills = null;
 
     public function __construct(mixed $primary_key = 0)
     {
@@ -566,14 +567,28 @@ class UserSetting extends ActiveRecord
         $skill_ids = $this->getAllPortfolioSkills();
 
         foreach ($skill_ids as $skill_id) {
-            ilPersonalSkill::addPersonalSkill($user->getId(), $skill_id);
+            $this->personalSkills()->addPersonalSkill($user->getId(), (int) $skill_id);
         }
+    }
+
+    /**
+     * Resolved on first use: building the skill service queries the database and
+     * needs the repository tree, which neither every ActiveRecord instance of this
+     * class nor the setup context running sql/dbupdate.php should pay for.
+     */
+    private function personalSkills(): SkillPersonalService
+    {
+        global $DIC;
+
+        return $this->personal_skills ??= $DIC->skills()->personal();
     }
 
     protected function getAllPortfolioSkills(): array
     {
         $user = $this->getUsrObject();
-        $pskills = array_keys(ilPersonalSkill::getSelectedUserSkills($user->getId()));
+        // Still keyed by skill node id, so the ids stay comparable to the ones
+        // read from the portfolio template pages below.
+        $pskills = array_keys($this->personalSkills()->getSelectedUserSkills($user->getId()));
         $skill_ids = [];
         foreach (ilPortfolioTemplatePage::getAllPortfolioPages($this->getPortfolioTemplateId()) as $page) {
             if ($page['type'] === ilPortfolioTemplatePage::TYPE_PAGE) {
